@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Scanner;
+import java.util.stream.Stream;
 
 public class Server {
 
@@ -27,16 +27,10 @@ public class Server {
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
 
-            StringBuilder stringBuilder = new StringBuilder(1000);
-            Scanner scanner = new Scanner(connectionSocket.getInputStream());
-
-
-            while (scanner.hasNextLine()) {
-                stringBuilder.append(scanner.nextLine());
-            }
-            System.out.println(stringBuilder.toString());
-
-//            System.out.println(inFromClient);
-        }
-    }
+           Stream<String> lines = inFromClient.lines();
+           lines.forEach((String s) -> {
+               System.out.println(s);
+           });
+       }
+   }
 }
