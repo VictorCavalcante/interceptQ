@@ -28,7 +28,7 @@ public class Client {
 
             // Check params
             String[] requestParams = userInput.split(" ");
-            if (requestParams.length != 2) {
+            if (!userInput.equals("EXIT") && requestParams.length != 2) {
                 System.out.println("> Invalid entry, try again");
             } else {
                 // Write to server

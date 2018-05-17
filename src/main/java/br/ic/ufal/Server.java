@@ -14,8 +14,8 @@ public class Server {
 
         while (true) {
             Socket connectionSocket = serverSocket.accept();
-            ServerClientThread cliConThread = new ServerClientThread(connectionSocket);
-            cliConThread.start();
+            ServerClientThread cliConnectionThread = new ServerClientThread(connectionSocket);
+            cliConnectionThread.start();
        }
    }
 }

@@ -1,15 +1,34 @@
 package br.ic.ufal;
 
 import javax.net.ssl.HttpsURLConnection;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class HttpClientHook {
 
     private final String USER_AGENT = "Mozilla/5.0";
+
+    public void writeReqOnFile(String method, String url, int responseCode, String responseBody) {
+        try(FileWriter fw = new FileWriter("request-log.txt", true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            PrintWriter out = new PrintWriter(bw)) {
+
+            String timeNow = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+            out.println("---------------------------------------------\n"
+                    + "Method: " + method + "\n"
+                    + "URL: " + url + "\n"
+                    + "Response Code: " + responseCode + "\n"
+                    + "Response Body: " + responseBody + "\n"
+                    + "Time: " + timeNow);
+            System.out.println("[Request logged at " + timeNow + "]");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // HTTP GET request
     protected String sendGet(String url, Map<String, String> headers) throws Exception {
@@ -34,6 +53,8 @@ public class HttpClientHook {
 
         System.out.println("> Response Body:");
         System.out.println(response.toString());
+        writeReqOnFile("GET", url, con.getResponseCode(), response.toString());
+
         return response.toString();
     }
 
@@ -72,6 +93,8 @@ public class HttpClientHook {
         in.close();
 
         System.out.println(response.toString());
+        writeReqOnFile("POST", url, con.getResponseCode(), response.toString());
+
         return response.toString();
     }
 
