@@ -13,8 +13,8 @@ public class Client {
         String userInput = "";
         Socket clientSocket = new Socket("localhost", 9090);
 
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());//Get OUT-handle
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));//Get IN-handle
+        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream()); //Get OUT-handle
+        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream())); //Get IN-handle
 
         // Get info
         System.out.println("> Let's get started!");

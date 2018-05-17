@@ -11,8 +11,9 @@ import java.util.Map;
 public class HttpClientHook {
 
     private final String USER_AGENT = "Mozilla/5.0";
+    private Cache cacheRegistry = new Cache();
 
-    public void writeReqOnFile(String method, String url, int responseCode, String responseBody) {
+    public void writeReqOnFile(String method, String url, int responseCode, String responseBody, boolean cached) {
         try(FileWriter fw = new FileWriter("request-log.txt", true);
             BufferedWriter bw = new BufferedWriter(fw);
             PrintWriter out = new PrintWriter(bw)) {
@@ -21,6 +22,7 @@ public class HttpClientHook {
             out.println("---------------------------------------------\n"
                     + "Method: " + method + "\n"
                     + "URL: " + url + "\n"
+                    + "Cached: " + String.valueOf(cached) + "\n"
                     + "Response Code: " + responseCode + "\n"
                     + "Response Body: " + responseBody + "\n"
                     + "Time: " + timeNow);
@@ -32,6 +34,13 @@ public class HttpClientHook {
 
     // HTTP GET request
     protected String sendGet(String url, Map<String, String> headers) throws Exception {
+
+        String resFromCache = cacheRegistry.getFromCache(url);
+        if(resFromCache != null) {
+            System.out.println("> Fetched cached request successfully");
+            writeReqOnFile("GET", url, 200, resFromCache, true);
+            return resFromCache;
+        }
 
         URL obj = new URL(url);
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
@@ -53,13 +62,21 @@ public class HttpClientHook {
 
         System.out.println("> Response Body:");
         System.out.println(response.toString());
-        writeReqOnFile("GET", url, con.getResponseCode(), response.toString());
+        writeReqOnFile("GET", url, con.getResponseCode(), response.toString(), false);
+        cacheRegistry.saveToCache(url, response.toString());
 
         return response.toString();
     }
 
     // HTTP POST request
     protected String sendPost(String url, Map<String, String> headers) throws Exception {
+
+        String resFromCache = cacheRegistry.getFromCache(url);
+        if(resFromCache != null) {
+            System.out.println("> Fetched cached request successfully");
+            writeReqOnFile("POST", url, 200, resFromCache, true);
+            return resFromCache;
+        }
 
         URL obj = new URL(url);
         HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
@@ -93,7 +110,8 @@ public class HttpClientHook {
         in.close();
 
         System.out.println(response.toString());
-        writeReqOnFile("POST", url, con.getResponseCode(), response.toString());
+        writeReqOnFile("POST", url, con.getResponseCode(), response.toString(), false);
+        cacheRegistry.saveToCache(url, response.toString());
 
         return response.toString();
     }
