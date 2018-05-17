@@ -22,7 +22,6 @@ public class Server {
             //Get IN-handle
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-
 //            Stream<String> lines = inFromClient.lines();
 //            lines.forEach((String s) -> {
 //                System.out.println(s);
@@ -30,14 +29,17 @@ public class Server {
 //            inFromClient.close();
 //            lines.close();
 
+            String url = inFromClient.readLine();
+
+
             System.out.println("DOING REQUEST (server): ");
             HttpClientHook http = new HttpClientHook();
-            String response = http.sendGet("https://viacep.com.br/ws/01001000/json", null);
-            ObjectOutputStream oos = new ObjectOutputStream(connectionSocket.getOutputStream());
-            //write object to Socket
-            oos.writeObject(response);
+            String response = http.sendGet("https://viacep.com.br" + url, null);
+
+            //write back to Socket
+            outToClient.writeBytes(response);
             //close resources
-            oos.close();
+            outToClient.close();
             connectionSocket.close();
        }
    }
