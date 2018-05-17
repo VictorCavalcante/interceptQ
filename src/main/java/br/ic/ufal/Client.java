@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class Client {
 
@@ -19,27 +17,35 @@ public class Client {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));//Get IN-handle
 
         // Get info
-        System.out.println("> Let's get it started! :)\n");
+        System.out.println("> Let's get started!");
+        System.out.println("> (type 'EXIT' to leave)\n");
 
         while (!userInput.equals("EXIT")) {
-            System.out.println("> (type 'EXIT' to leave)");
+            System.out.println("---------------------------------------------");
             System.out.println("> Provide us with the request <METHOD URL>: ");
             BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
             userInput = inFromUser.readLine();
 
-            // Write to server
-            System.out.println("WAITING TO SENT TO SERVER =>");
-            outToServer.writeBytes(userInput + '\n');
+            // Check params
+            String[] requestParams = userInput.split(" ");
+            if (requestParams.length != 2) {
+                System.out.println("> Invalid entry, try again");
+            } else {
+                // Write to server
+                outToServer.writeBytes(userInput + '\n');
 
-            if (!userInput.equals("EXIT")) {
-                //Print out
-                System.out.println("FROM SERVER:");
-                System.out.println("WAITING FOR SERVER <=");
-                String result = inFromServer.readLine();
-                System.out.println(result);
+                if (!userInput.equals("EXIT")) {
+                    System.out.println("> Making request...");
+                    //Print out
+                    String result = inFromServer.readLine();
+                    System.out.println("> Response:");
+                    System.out.println(result);
+                }
             }
+
         }
 
+        System.out.println("\n> See you soon!");
         clientSocket.close();
     }
 }

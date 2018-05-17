@@ -15,8 +15,14 @@ public class ServerClientThread extends Thread {
     }
 
     public void run() {
+        HttpClientHook http = new HttpClientHook();
         DataOutputStream outToClient = null; //Get OUT-handle
         BufferedReader inFromClient = null; //Get IN-handle
+        String requestInput;
+        String[] requestParams;
+        String reqMethod;
+        String reqUrl;
+        String response = "";
 
         try {
             outToClient = new DataOutputStream(clientSocket.getOutputStream());
@@ -29,26 +35,21 @@ public class ServerClientThread extends Thread {
 
         while (connected) {
             try {
-                System.out.println("WAITING FOR CLIENT <=");
-                String requestInput = inFromClient.readLine();
+                System.out.println("---------------------------------------------");
+                requestInput = inFromClient.readLine();
 
                 if (!requestInput.equals("EXIT")) {
-                    String[] requestParams = requestInput.split(" ");
+                    requestParams = requestInput.split(" ");
+                    reqMethod = requestParams[0];
+                    reqUrl = requestParams[1];
 
-                    if (requestParams.length != 2) {
-                        connected = false;
-                        throw new Exception("Invalid entry!");
+                    if (reqMethod.equals("GET")) {
+                        response = http.sendGet(reqUrl, null);
+                    } else if (reqMethod.equals("POST")) {
+                        response = http.sendPost(reqUrl, null);
                     }
 
-                    String reqMethod = requestParams[0];
-                    String reqUrl = requestParams[1];
-
-                    System.out.println("DOING REQUEST (server): ");
-                    HttpClientHook http = new HttpClientHook();
-                    String response = http.sendGet(reqUrl, null);
-
                     //write back to Socket
-                    System.out.println("WAITING TO SENT TO CLIENT =>");
                     outToClient.writeBytes(response + '\n');
                 } else {
                     connected = false;
@@ -60,9 +61,7 @@ public class ServerClientThread extends Thread {
         }
 
         try {
-
             clientSocket.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
