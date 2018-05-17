@@ -9,13 +9,15 @@ import java.net.Socket;
 public class ServerClientThread extends Thread {
 
     Socket clientSocket;
+    private ServerRequestUtil serverRequest;
 
-    ServerClientThread(Socket clientSocket) {
+    ServerClientThread(Socket clientSocket, ServerRequestUtil serverRequest) {
         this.clientSocket = clientSocket;
+        this.serverRequest = serverRequest;
     }
 
     public void run() {
-        HttpClientHook http = new HttpClientHook();
+
         DataOutputStream outToClient = null; //Get OUT-handle
         BufferedReader inFromClient = null; //Get IN-handle
         String requestInput;
@@ -44,9 +46,9 @@ public class ServerClientThread extends Thread {
                     reqUrl = requestParams[1];
 
                     if (reqMethod.equals("GET")) {
-                        response = http.sendGet(reqUrl, null);
+                        response = this.serverRequest.sendGet(reqUrl, null);
                     } else if (reqMethod.equals("POST")) {
-                        response = http.sendPost(reqUrl, null);
+                        response = this.serverRequest.sendPost(reqUrl, null);
                     }
 
                     //write back to Socket

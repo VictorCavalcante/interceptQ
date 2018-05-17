@@ -8,10 +8,14 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
-public class HttpClientHook {
+public class ServerRequestUtil {
 
     private final String USER_AGENT = "Mozilla/5.0";
-    private Cache cacheRegistry = new Cache();
+    private final Cache cacheRegistry;
+
+    ServerRequestUtil(Cache cacheRegistry) {
+        this.cacheRegistry = cacheRegistry;
+    }
 
     public void writeReqOnFile(String method, String url, int responseCode, String responseBody, boolean cached) {
         try(FileWriter fw = new FileWriter("request-log.txt", true);

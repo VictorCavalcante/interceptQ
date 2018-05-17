@@ -7,14 +7,14 @@ public class Server {
 
     public static void main(String[] args) throws Exception {
         int port = 9090;
+        Cache cacheRegistry = new Cache();
+        ServerSocket serverSocket = new ServerSocket(port);
+        ServerRequestUtil serverRequestUtil = new ServerRequestUtil(cacheRegistry);
 
         System.out.println("### SERVER STARTED");
-
-        ServerSocket serverSocket = new ServerSocket(port);
-
         while (true) {
             Socket connectionSocket = serverSocket.accept();
-            ServerClientThread cliConnectionThread = new ServerClientThread(connectionSocket);
+            ServerClientThread cliConnectionThread = new ServerClientThread(connectionSocket, serverRequestUtil);
             cliConnectionThread.start();
        }
    }
