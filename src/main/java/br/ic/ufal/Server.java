@@ -9,12 +9,11 @@ public class Server {
         int port = 9090;
         Cache cacheRegistry = new Cache();
         ServerSocket serverSocket = new ServerSocket(port);
-        ServerRequestUtil serverRequestUtil = new ServerRequestUtil(cacheRegistry);
 
         System.out.println("### SERVER STARTED");
         while (true) {
             Socket connectionSocket = serverSocket.accept();
-            ServerClientThread cliConnectionThread = new ServerClientThread(connectionSocket, serverRequestUtil);
+            ServerClientThread cliConnectionThread = new ServerClientThread(connectionSocket, cacheRegistry);
             cliConnectionThread.start();
        }
    }

@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class ServerRequestUtil {
-
+/*
     private final String USER_AGENT = "Mozilla/5.0";
     private final Cache cacheRegistry;
 
@@ -119,5 +119,5 @@ public class ServerRequestUtil {
 
         return response.toString();
     }
-
+*/
 }
