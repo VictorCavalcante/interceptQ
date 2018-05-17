@@ -4,12 +4,13 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.stream.Stream;
 
 public class Client {
 
     public static void main(String[] args) throws Exception {
         System.out.println("SINGLE THREAD CLIENT");
-        System.out.println("Testing 1 - Send Http GET request");
 
         Socket clientSocket = new Socket("localhost", 9090);
 
@@ -19,19 +20,19 @@ public class Client {
         BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
         // Get info
-        System.out.println("Digite o cep:");
+        System.out.println("> Let's get it started!");
+        System.out.print("> Provide us with the request <METHOD URL>: ");
         BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        String requestUrl = inFromUser.readLine();
-        String response;
+        String requestInput = inFromUser.readLine();
 
         //Exchange info
-        outToServer.writeBytes(requestUrl + '\n');
-
-        response = inFromServer.readLine();
+        outToServer.writeBytes(requestInput + '\n');
 
         //Print out
-        System.out.println("FROM SERVER: " + response);
-        clientSocket.close();
+        System.out.println("FROM SERVER:");
+        Stream<String> response = inFromServer.lines();
+        response.forEach(System.out::println);
 
+        clientSocket.close();
     }
 }

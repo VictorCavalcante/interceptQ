@@ -9,9 +9,9 @@ import java.net.Socket;
 public class Server {
 
     public static void main(String[] args) throws Exception {
-        int port = 9090;
-
         System.out.println("SINGLE-THREAD SERVER");
+
+        int port = 9090;
         ServerSocket serverSocket = new ServerSocket(port);
 
         while (true) {
@@ -22,19 +22,20 @@ public class Server {
             //Get IN-handle
             BufferedReader inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream()));
 
-//            Stream<String> lines = inFromClient.lines();
-//            lines.forEach((String s) -> {
-//                System.out.println(s);
-//            });
-//            inFromClient.close();
-//            lines.close();
+            String[] requestInfo = inFromClient.readLine().split(" ");
 
-            String url = inFromClient.readLine();
+            if (requestInfo.length != 2) {
+                System.out.println("Invalid entry!");
+                connectionSocket.close();
+                break;
+            }
 
+            String reqMethod = requestInfo[0];
+            String reqUrl = requestInfo[1];
 
             System.out.println("DOING REQUEST (server): ");
             HttpClientHook http = new HttpClientHook();
-            String response = http.sendGet("https://viacep.com.br" + url, null);
+            String response = http.sendGet(reqUrl, null);
 
             //write back to Socket
             outToClient.writeBytes(response);
